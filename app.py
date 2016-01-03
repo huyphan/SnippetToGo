@@ -1,12 +1,19 @@
+__author__ = "Huy Phan <dachuy@gmail.com>"
+__license__ = "WTFPL"
+__version__ = "0.1"
+__maintainer__ = "Huy Phan"
+__email__ = "dachuy@gmail.com"
+__status__ = "Development"
+
 from flask import Flask, request, abort, make_response
-import whoosh.index as index
 from whoosh.query import Every
 from whoosh.qparser import QueryParser, MultifieldParser
+import whoosh.index
 import json
 import uuid
 import config
 
-ix = index.open_dir(config.INDEX_DIR)
+index = whoosh.index.open_dir(config.INDEX_DIR)
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -15,27 +22,27 @@ def main():
     return app.send_static_file('index.html')
 
 def get_snippet_by_id(snippet_id):
-    return ix.searcher().document(id=snippet_id)
+    return index.searcher().document(id=snippet_id)
 
 @app.route('/snippets', methods=['GET'])
 def search_snippet():
-    query = request.args.get('q', None)
+    query = request.args.get('query', None)
     page = request.args.get('page', 1)
 
     if query:
-        qp = MultifieldParser(["title", "content"], schema=ix.schema)
+        qp = MultifieldParser(["title", "content"], schema=index.schema)
         q = qp.parse(query)
     else:
         q = Every()
 
     response = {"results":[], "total": 0}
-    with ix.searcher() as searcher:
+    with index.searcher() as searcher:
         results = searcher.search_page(q, page, pagelen=config.SEARCH_PAGINATION, sortedby="title")
         for snippet in results:
-            response["results"].append(dict(snippet))
+            response["results"].append({'id': snippet['id'], 'title': snippet['title']})
         response["total"] = len(results)
         return json.dumps(response)
-        
+
     return json.dumps(response)
 
 @app.route('/snippets', methods=['POST'])
@@ -44,13 +51,13 @@ def add_snippet():
     content = request.form['content']
     tag = request.form['tag']
     language = request.form['language']
-    document_id = unicode(uuid.uuid4())
+    snippet_id = unicode(uuid.uuid4())
 
-    writer = ix.writer()
-    writer.update_document(id=document_id, content=content, tag=tag, title=title)
+    writer = index.writer()
+    writer.update_document(id=snippet_id, content=content, tag=tag, title=title, language=language)
     writer.commit()
 
-    return '{"success": true, "message": "Snippet added successfully"}'
+    return '{"success": true, "message": "Snippet added successfully", "snippet_id": "%s"}' % snippet_id
 
 @app.route('/snippets/<snippet_id>', methods=['GET'])
 def get_snippet(snippet_id):
@@ -69,8 +76,16 @@ def edit_snippet(snippet_id):
     if not get_snippet_by_id(snippet_id):
         abort(make_response('{"message": "The snippet you are trying to update doesn\'t exist"}', 404))
 
-    writer = ix.writer()
-    writer.update_document(id=snippet_id, content=content, tag=tag, title=title)
+    writer = index.writer()
+    writer.update_document(id=snippet_id, content=content, tag=tag, title=title, language=language)
     writer.commit()
 
-    return '{"message": "Snippet updated successfully"}'
+    return '{"success": true, "message": "Snippet added successfully", "snippet_id": "%s"}' % snippet_id
+
+@app.route('/snippets/<snippet_id>', methods=['DELETE'])
+def delete_snippet(snippet_id):
+    writer = index.writer()
+    writer.delete_by_term("id", snippet_id)
+    writer.commit()
+
+    return '{"message": "Snippet deleted successfully"}'

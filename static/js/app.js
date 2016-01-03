@@ -1,35 +1,33 @@
-var editor, code_viewer, current_snippet;
+var editor, current_snippet;
 var supported_languages = ['markdown', 'apl', 'asciiarmor', 'asn.1', 'asterisk', 'brainfuck', 'clike', 'clojure', 'cmake', 'cobol', 'coffeescript', 'commonlisp', 'crystal', 'css', 'cypher', 'd', 'dart', 'diff', 'django', 'dockerfile', 'dtd', 'dylan', 'ebnf', 'ecl', 'eiffel', 'elm', 'erlang', 'factor', 'forth', 'fortran', 'gas', 'gfm', 'gherkin', 'go', 'groovy', 'haml', 'handlebars', 'haskell', 'haxe', 'htmlembedded', 'htmlmixed', 'http', 'idl', 'index.html', 'jade', 'javascript', 'jinja2', 'julia', 'livescript', 'lua', 'mathematica', 'meta.js', 'mirc', 'mllike', 'modelica', 'mscgen', 'mumps', 'nginx', 'nsis', 'ntriples', 'octave', 'oz', 'pascal', 'pegjs', 'perl', 'php', 'pig', 'properties', 'puppet', 'python', 'q', 'r', 'rpm', 'rst', 'ruby', 'rust', 'sass', 'scheme', 'shell', 'sieve', 'slim', 'smalltalk', 'smarty', 'solr', 'soy', 'sparql', 'spreadsheet', 'sql', 'stex', 'stylus', 'swift', 'tcl', 'textile', 'tiddlywiki', 'tiki', 'toml', 'tornado', 'troff', 'ttcn', 'ttcn-cfg', 'turtle', 'twig', 'vb', 'vbscript', 'velocity', 'verilog', 'vhdl', 'vue', 'xml', 'xquery', 'yaml', 'yaml-frontmatter', 'z80'];
 
-function generate_snippet_link(title, tag, snippet_id) {
-    var a = $("<a />")
+function generate_snippet_link(title, snippet_id) {
+    return $("<a />")
             .addClass("menu-item")
             .html(title)
             .attr("snippet-id", snippet_id)
-            .click(function(){show_snippet(snippet_id)})
+            .click(function(){download_snippet(snippet_id)})
             .append($("<br />"));
-
-    var tags = tag.split(",");
-    for (var i=0;i<tags.length;i++) {
-        a.append($("<span />").addClass("tag").html(tags[i]));
-    }            
-
-    return a;
 }
 
-function reload_snippets() {
+function reload_snippets(query) {
     $.ajax({
+        method: "GET",
         dataType: "json",
         url: "snippets",
+        data: {
+            query: query
+        },
         beforeSend: function() {
             $("#sidebar-loading").show();
             $("#snippet-editor").hide();
+            $("#search-result").hide();
         },
         success: function(data) {
             $("#search-result-count").html(data.total);
             $("#snippets").empty();
             for (var i=0;i<data.total;i++) {
-                $("#snippets").append(generate_snippet_link(data.results[i].title, data.results[i].tag, data.results[i].id));
+                $("#snippets").append(generate_snippet_link(data.results[i].title, data.results[i].id));
             }
             $("#search-result").show();
         },
@@ -39,7 +37,31 @@ function reload_snippets() {
     });
 }
 
-function show_snippet(snippet_id) {
+function show_snippet(title, content, tag, language) {
+    $("#snippet-title").html(title);
+    $("#snippet-container").show();
+
+    var tags = tag.split(",");
+    $("#snippet-tags").empty();
+    for (var i=0;i<tags.length;i++) {
+        if (!tag) continue;
+        $("#snippet-tags").append($("<span />").addClass("tag").html(tags[i]));
+    }
+
+    if (language == "markdown") {
+        $("#snippet-content-markdown").html(marked(content));
+        $("#snippet-content").hide();
+        $("#snippet-content-markdown").show();
+    } else {
+        $("#snippet-content").html(content);
+        $("#snippet-content").attr("class", language);
+        hljs.highlightBlock($("#snippet-content").get(0));
+        $("#snippet-content-markdown").hide();
+        $("#snippet-content").show();
+    }
+}
+
+function download_snippet(snippet_id) {
     $.ajax({
         method: "GET",
         url: "snippets/" + snippet_id,
@@ -51,16 +73,7 @@ function show_snippet(snippet_id) {
         },
         success: function(data) {
             current_snippet = data;
-            $("#snippet-title").html(data.title);
-            $("#snippet-tag").html(data.tag);
-            $("#snippet-container").show();
-
-            if (data.language == "markdown") {
-                $("#snippet-content").html(data.content);
-            } else {
-                code_viewer.refresh();                
-                code_viewer.setValue(data.content);
-            }
+            show_snippet(data.title, data.content, data.tag, data.language);
         },
         complete: function() {
             $("#content-loading").hide();
@@ -69,33 +82,50 @@ function show_snippet(snippet_id) {
 }
 
 function save_snippet(id, title, content, tag, language) {
+    var url, method;
+
     if (id) {
-        $.ajax({
-            method: "PUT",
-            url: "snippets/" + id,
-            dataType: "json",
-            data: {
-                content: content,
-                title: title,
-                tag: tag,
-                language: language
-            },
-            success: reload_snippets
-        });
+        method = "PUT";
+        url = "snippets/" + id;
     } else {
-        $.ajax({
-            method: "POST",
-            url: "snippets",
-            dataType: "json",
-            data: {
-                content: content,
-                title: title,
-                tag: tag,
-                language: language
-            },
-            success: reload_snippets
-        });
+        method = "POST";
+        url = "snippets";
     }
+
+    current_snippet = {
+            content: content,
+            title: title,
+            tag: tag,
+            language: language
+        }
+
+    $.ajax({
+        method: method,
+        url: url,
+        dataType: "json",
+        data: current_snippet,
+        success: function(data) {
+            $("#notification-msg").html(data.message);
+            $("#notification-msg").show().delay(3000).fadeOut();
+            show_snippet(title, content, tag, language);
+            current_snippet.id = data['snippet_id']
+            reload_snippets()
+        }
+    });
+}
+
+function delete_snippet(snippet_id) {
+    $.ajax({
+        method: "DELETE",
+        url: "snippets/" + snippet_id,
+        dataType: "json",
+        success: function(data) {
+            $("#snippet-container").hide();
+            $("#notification-msg").html(data.message);
+            $("#notification-msg").show().delay(3000).fadeOut();
+            reload_snippets()
+        }
+    });
 }
 
 $(document).ready(function() {
@@ -107,27 +137,16 @@ $(document).ready(function() {
         lineWrapping: true
     });
 
-    code_viewer = CodeMirror.fromTextArea($("#snippet-content").get(0), {
-        mode: "application/xml",
-        styleActiveLine: true,
-        lineNumbers: true,
-        lineWrapping: true,
-        isReadOnly: true;
-    });
-
-    $.ajaxSetup({
-        error: function(data){
-            $("#error-msg").html(data.message);
-            $("#error-msg").show().delay(3000).fadeOut();
-        },
-        success: function(data){
-            $("#notification-msg").html(data.message);
-            $("#notification-msg").show().delay(3000).fadeOut();
-        }
-    });
-
     $("#search-btn").click(function(){
+        var query = $("#query").val();
+        reload_snippets(query);
+    });
 
+    $('#query').keypress(function (e) {
+        if (e.which == 13) {
+            var query = $("#query").val();
+            reload_snippets(query);
+        }
     });
 
     $("#add-btn").click(function(){
@@ -160,7 +179,7 @@ $(document).ready(function() {
 
     $("#delete-btn").click(function(event){
         if (confirm("Are you sure you want to delete this snippet ?")) {
-            console.log(event);
+            delete_snippet(current_snippet.id);
         }
     });
 

@@ -13,16 +13,17 @@
     <link href="static/css/primer.css" rel="stylesheet">
     <link href="static/css/codemirror.css" rel="stylesheet">
     <link href="static/css/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">
 </head>
 <body>
     <div class="header">
         <div class="container">
             <div class="flex-table-item flex-table-item-primary">
-                <input class="input-block" type="text" placeholder="Search Snippet">
+                <input id="query" class="input-block" type="text" placeholder="Search Snippet" autofocus/>
             </div>
             <div class="flex-table-item">
-                <button class="btn" type="button" id="search-btn">Search</button>
-                <button class="btn" type="button" id="add-btn">Add Snippet</button>
+                <button id="search-btn" class="btn" type="button" >Search</button>
+                <button id="add-btn" class="btn" type="button">Add Snippet</button>
             </div>
         </div>
     </div>
@@ -43,13 +44,18 @@
             <div class="three-fourths column">
                 <img id="content-loading" class="centered ajax-indicator hidden" src="static/img/loading.gif" />
                 <div id="snippet-container" class="hidden">
-                    <h2 id="snippet-title"></h2>
                     <div id="action-btns" class="bs-component clearfix  flex-table-item">
                         <button type="button" class="btn btn-danger right" id="delete-btn">Delete</button>
                         <button type="button" class="btn btn-outline right" id="edit-btn">Edit</button>
                     </div>
-                    <textarea id="snippet-content"></textarea>
-                    <div id="snippet-content-markdown">
+                    <h2 id="snippet-title"></h2>
+                    <pre id="snippet-content">
+
+                    </pre>
+                    <div id="snippet-content-markdown" class="markdown-body">
+
+                    </div>
+                    <div id="snippet-tags">
 
                     </div>
                 </div>
@@ -87,10 +93,11 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript" ></script>
-    <script src="static/js/bootstrap.min.js" type="text/javascript" ></script>
-    <script src="static/js/codemirror.js" type="text/javascript" charset="utf-8"></script>
-    <script src="static/js/app.js" type="text/javascript" ></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/highlight.min.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.js" type="text/javascript"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js" type="text/javascript"></script>
+    <script src="static/js/app.js" type="text/javascript"></script>
 
 </body>
 </html>
