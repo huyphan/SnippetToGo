@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SnippetsToGo</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/css/primer.css" rel="stylesheet">
+    <link href="static/css/codemirror.css" rel="stylesheet">
+    <link href="static/css/main.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="flex-table-item flex-table-item-primary">
+                <input class="input-block" type="text" placeholder="Search Snippet">
+            </div>
+            <div class="flex-table-item">
+                <button class="btn" type="button" id="search-btn">Search</button>
+                <button class="btn" type="button" id="add-btn">Add Snippet</button>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="columns">
+            <div class="flash hidden" id="notification-msg"></div>
+            <div class="flash flash-error hidden" id="error-msg"></div>
+        </div>
+        <div class="columns">
+            <div class="one-fourth column">
+                <div id="search-result" class="hidden">
+                    <h3>Found <span id="search-result-count"></span> snippet(s)</h3>
+                    <nav class="menu" id="snippets">
+                    </nav>
+                </div>
+                <img id="sidebar-loading" class="centered ajax-indicator" src="static/img/loading.gif" />
+            </div>
+            <div class="three-fourths column">
+                <img id="content-loading" class="centered ajax-indicator hidden" src="static/img/loading.gif" />
+                <div id="snippet-container" class="hidden">
+                    <h2 id="snippet-title"></h2>
+                    <div id="action-btns" class="bs-component clearfix  flex-table-item">
+                        <button type="button" class="btn btn-danger right" id="delete-btn">Delete</button>
+                        <button type="button" class="btn btn-outline right" id="edit-btn">Edit</button>
+                    </div>
+                    <textarea id="snippet-content"></textarea>
+                    <div id="snippet-content-markdown">
+
+                    </div>
+                </div>
+                <div id="snippet-editor" class="hidden">
+                    <h3 id="action-title">Add new snippet</h3>
+                    <input type="hidden" id="snippet-editor-id" />
+                    <div class="columns">
+                        <input id="snippet-editor-title" class="input-block" type="text" placeholder="Snippet title" />
+                    </div>
+                    <div class="columns">
+                        <div class=" flex-table-item flex-table-item-primary">
+                            <input id="snippet-editor-tag" class="input-block" type="text" placeholder="tags separated by commas" />
+                        </div>
+                        <div class=" flex-table-item">
+                            <select id="snippet-editor-language" class="select">
+                            </select>
+                            <button type="button" class="btn btn-outline" id="save-btn">Save</button>
+                            <button type="button" class="btn" id="cancel-btn">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="columns">
+                        <textarea id="snippet-editor-content"></textarea>
+                    </div>
+                </div>
+            </div>
+      </div>
+
+      <hr>
+
+      <footer class="text-center">
+        <p>Powered by SnippetsToGo</p>
+      </footer>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js" type="text/javascript" ></script>
+    <script src="static/js/bootstrap.min.js" type="text/javascript" ></script>
+    <script src="static/js/codemirror.js" type="text/javascript" charset="utf-8"></script>
+    <script src="static/js/app.js" type="text/javascript" ></script>
+
+</body>
+</html>
