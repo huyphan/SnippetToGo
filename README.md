@@ -4,7 +4,18 @@ SnippetsToGo is a Flasked-based web application that helps manage your code snip
 
 # Why SnippetsToGo ?
 
-I've been searching around for some tools that could either manage my code snippets locally or "on the cloud" but failed to find a free or open source solution. When you can't find what you want, why not just make one ?
+I've been searching around for some tool that could manage my code snippets either locally or "on the cloud" and is able to:
+
+* Support tags/labels on snippets.
+* Support syntax highlighting.
+* Fully support Markdown. I've seen Markdown supported by a couple of tools but the content doesn't get rendered when users just view (not edit) the snippets.
+* Full-text search over snippet's title and content.
+
+However I failed to find a free or open source solution. When you can't find the tool you need, why not just create one ?
+
+SnippetsToGo is dead simple and not built to deal with large amount of data. Powered by Whoosh, a pure-Python search engine, SnippetsToGo should be able to handle thousands of snippets. But if you plan to move toward something more scalable and reliable, it's a better idea to plug Elasticsearch or Solr in.
+
+Beside [Flask](http://flask.pocoo.org) and [Whoosh](https://bitbucket.org/mchaput/whoosh/wiki/Home) as the only two main third-party libraries on server side, this project uses [PrimerCSS](http://primercss.io/), [Highlight.js](https://highlightjs.org), [CodeMirror](http://codemirror.net), [marked](https://github.com/chjj/marked) and [jQuery](https://github.com/chjj/marked) for client side.
 
 # Development
 
