@@ -1,10 +1,10 @@
 # SnippetsToGo
 
-SnippetsToGo is a Flasked-based web application that helps manage your code snippets. Install it on your server and access your code anywhere.
+SnippetsToGo is a Flasked-based web application that helps manage your code snippets. Install it on your server and access your code from anywhere.
 
 # Why SnippetsToGo ?
 
-I've been searching around for some snippet managers that could either manage my code snippets locally or "on the cloud" but failed to find a free or open source solution. When you can't find what you want, why not just make one ?
+I've been searching around for some tools that could either manage my code snippets locally or "on the cloud" but failed to find a free or open source solution. When you can't find what you want, why not just make one ?
 
 # Development
 
@@ -17,12 +17,12 @@ $ pip install -r requirements.txt
 
 # Usage
 
-First step is to create an index folder for 
+First step is to create an index folder for Whoosh:
 ```
 $ ./setup.py
 ```
 
-Start the web server in "quick and dirty" mode (mostly for development):
+Then start the web server in "quick and dirty" mode (mostly for development):
 ```
 $ ./quick_run.py
 ```
