@@ -5,7 +5,7 @@ __maintainer__ = "Huy Phan"
 __email__ = "dachuy@gmail.com"
 __status__ = "Development"
 
-from flask import Flask, request, abort, make_response
+from flask import Flask, request, abort, make_response, jsonify
 from whoosh.query import Every
 from whoosh.qparser import QueryParser, MultifieldParser
 import whoosh.index
@@ -16,6 +16,10 @@ import config
 index = whoosh.index.open_dir(config.INDEX_DIR)
 
 app = Flask(__name__, static_url_path='/static')
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify(error=500, message=str(error)), 500
 
 @app.route('/')
 def main():

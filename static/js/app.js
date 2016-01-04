@@ -137,6 +137,20 @@ $(document).ready(function() {
         lineWrapping: true
     });
 
+    $.ajaxSetup({
+        dataType: "json",
+        success: function(data) {
+            $("#notification-msg").html(data.message);
+            $("#notification-msg").show().delay(3000).fadeOut();
+        },
+        error: function(e) {
+            var data = e.responseJSON;
+            $("#error-msg").html(data.message);
+            $("#error-msg-container").show().delay(3000).fadeOut();
+        },
+    });
+
+
     $("#search-btn").click(function(){
         var query = $("#query").val();
         reload_snippets(query);

@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="static/css/main.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/codemirror.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/octicons/3.3.0/octicons.min.css">
 </head>
 <body>
     <div class="header">
@@ -21,7 +22,7 @@
                 <input id="query" class="input-block" type="text" placeholder="Search Snippet" autofocus/>
             </div>
             <div class="flex-table-item">
-                <button id="search-btn" class="btn" type="button" >Search</button>
+                <button id="search-btn" class="btn" type="button" ><span class="octicon octicon-search"></span></button>
                 <button id="add-btn" class="btn" type="button">Add Snippet</button>
             </div>
         </div>
@@ -29,7 +30,10 @@
     <div class="container">
         <div class="columns">
             <div class="flash hidden" id="notification-msg"></div>
-            <div class="flash flash-error hidden" id="error-msg"></div>
+            <div class="flash flash-error flash-with-icon hidden" id="error-msg-container">
+                <span class="octicon octicon-alert"></span>
+                <span id="error-msg"></span>
+            </div>
         </div>
         <div class="columns">
             <div class="one-fourth column">
@@ -43,10 +47,6 @@
             <div class="three-fourths column">
                 <img id="content-loading" class="centered ajax-indicator hidden" src="static/img/loading.gif" />
                 <div id="snippet-container" class="hidden">
-                    <div id="action-btns" class="bs-component clearfix  flex-table-item">
-                        <button type="button" class="btn btn-danger right" id="delete-btn">Delete</button>
-                        <button type="button" class="btn btn-outline right" id="edit-btn">Edit</button>
-                    </div>
                     <h2 id="snippet-title"></h2>
                     <pre id="snippet-content">
 
@@ -57,6 +57,10 @@
                     <div id="snippet-tags">
 
                     </div>
+                    <div id="action-btns" class="bs-component clearfix  flex-table-item">
+                        <button type="button" class="btn btn-danger right" id="delete-btn">Delete</button>
+                        <button type="button" class="btn btn-outline right" id="edit-btn">Edit</button>
+                    </div>                    
                 </div>
                 <div id="snippet-editor" class="hidden">
                     <h3 id="action-title">Add new snippet</h3>
