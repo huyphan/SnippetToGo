@@ -2,6 +2,8 @@
 
 SnippetsToGo is a Flasked-based web application that helps manage your code snippets. Install it on your server and access your code from anywhere.
 
+See read-only demo [here](http://snippetstogo.appspot.com)
+
 # Why SnippetsToGo ?
 
 I've been searching around for some tool that could manage my code snippets either locally or "on the cloud" and is able to:
