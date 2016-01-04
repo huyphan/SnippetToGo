@@ -84,6 +84,11 @@ function download_snippet(snippet_id) {
 function save_snippet(id, title, content, tag, language) {
     var url, method;
 
+    if (!title.trim() || !content.trim()) {
+        alert("Ouch! Looks like your title or snippet content is empty.")
+        return;
+    }
+
     if (id) {
         method = "PUT";
         url = "snippets/" + id;

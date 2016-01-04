@@ -51,11 +51,14 @@ def search_snippet():
 
 @app.route('/snippets', methods=['POST'])
 def add_snippet():
-    title = request.form['title']
-    content = request.form['content']
+    title = request.form['title'].strip()
+    content = request.form['content'].strip()
     tag = request.form['tag']
     language = request.form['language']
     snippet_id = unicode(uuid.uuid4())
+
+    if not title or not content:
+        raise Exception("Empty title or snippet content")
 
     writer = index.writer()
     writer.update_document(id=snippet_id, content=content, tag=tag, title=title, language=language)
@@ -71,11 +74,14 @@ def get_snippet(snippet_id):
     return json.dumps(snippet)
 
 @app.route('/snippets/<snippet_id>', methods=['PUT'])
-def edit_snippet(snippet_id):
+def update_snippet(snippet_id):
     title = request.form['title']
     content = request.form['content']
     language = request.form['language']
     tag = request.form['tag']
+
+    if not title or not content:
+        raise Exception("Empty title or content")
 
     if not get_snippet_by_id(snippet_id):
         abort(make_response('{"message": "The snippet you are trying to update doesn\'t exist"}', 404))
