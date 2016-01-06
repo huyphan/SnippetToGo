@@ -30,7 +30,7 @@ def search_snippet():
     page = request.args.get('page', 1)
 
     if query:
-        qp = MultifieldParser(["title", "content"], schema=index.schema)
+        qp = MultifieldParser(["title", "content", "tag"], schema=index.schema)
         q = qp.parse(query)
     else:
         q = Every()
