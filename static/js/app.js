@@ -1,5 +1,6 @@
 var editor, current_snippet;
 var supported_languages = ['markdown', 'apl', 'asciiarmor', 'asn.1', 'asterisk', 'brainfuck', 'clike', 'clojure', 'cmake', 'cobol', 'coffeescript', 'commonlisp', 'crystal', 'css', 'cypher', 'd', 'dart', 'diff', 'django', 'dockerfile', 'dtd', 'dylan', 'ebnf', 'ecl', 'eiffel', 'elm', 'erlang', 'factor', 'forth', 'fortran', 'gas', 'gfm', 'gherkin', 'go', 'groovy', 'haml', 'handlebars', 'haskell', 'haxe', 'htmlembedded', 'htmlmixed', 'http', 'idl', 'index.html', 'jade', 'javascript', 'jinja2', 'julia', 'livescript', 'lua', 'mathematica', 'meta.js', 'mirc', 'mllike', 'modelica', 'mscgen', 'mumps', 'nginx', 'nsis', 'ntriples', 'octave', 'oz', 'pascal', 'pegjs', 'perl', 'php', 'pig', 'properties', 'puppet', 'python', 'q', 'r', 'rpm', 'rst', 'ruby', 'rust', 'sass', 'scheme', 'shell', 'sieve', 'slim', 'smalltalk', 'smarty', 'solr', 'soy', 'sparql', 'spreadsheet', 'sql', 'stex', 'stylus', 'swift', 'tcl', 'textile', 'tiddlywiki', 'tiki', 'toml', 'tornado', 'troff', 'ttcn', 'ttcn-cfg', 'turtle', 'twig', 'vb', 'vbscript', 'velocity', 'verilog', 'vhdl', 'vue', 'xml', 'xquery', 'yaml', 'yaml-frontmatter', 'z80'];
+CodeMirror.modeURL = "//cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/mode/%N/%N.js";
 
 function generate_snippet_link(title, snippet_id) {
     return $("<a />")
@@ -84,6 +85,11 @@ function download_snippet(snippet_id) {
 function save_snippet(id, title, content, tag, language) {
     var url, method;
 
+    if (!title.trim() || !content.trim()) {
+        alert("Ouch! Looks like your title or snippet content is empty.")
+        return;
+    }
+
     if (id) {
         method = "PUT";
         url = "snippets/" + id;
@@ -93,11 +99,11 @@ function save_snippet(id, title, content, tag, language) {
     }
 
     current_snippet = {
-            content: content,
-            title: title,
-            tag: tag,
-            language: language
-        }
+        content: content,
+        title: title,
+        tag: tag,
+        language: language
+    }
 
     $.ajax({
         method: method,
@@ -108,8 +114,8 @@ function save_snippet(id, title, content, tag, language) {
             $("#notification-msg").html(data.message);
             $("#notification-msg").show().delay(3000).fadeOut();
             show_snippet(title, content, tag, language);
-            current_snippet.id = data['snippet_id']
-            reload_snippets()
+            current_snippet.id = data['snippet_id'];
+            reload_snippets();
         }
     });
 }
@@ -123,7 +129,22 @@ function delete_snippet(snippet_id) {
             $("#snippet-container").hide();
             $("#notification-msg").html(data.message);
             $("#notification-msg").show().delay(3000).fadeOut();
-            reload_snippets()
+            reload_snippets();
+
+            // Reset form values
+            editor.setValue("");
+            $("#snippet-editor-title").val("");
+            $("#snippet-editor-tag").val("");
+            $("#snippet-editor-id").val("");
+            $("#snippet-editor-language").val("markdown");
+            editor.refresh();
+
+            // Reset snippet value
+            current_snippet = null;
+            $("#snippet-content-markdown").empty();
+            $("#snippet-content").empty();
+            $("#snippet-title").empty();
+            $("#snippet-tags").empty();
         }
     });
 }
@@ -131,10 +152,24 @@ function delete_snippet(snippet_id) {
 $(document).ready(function() {
 
     editor = CodeMirror.fromTextArea($("#snippet-editor-content").get(0), {
-        mode: "application/xml",
+        mode: "markdown",
         styleActiveLine: true,
         lineNumbers: true,
         lineWrapping: true
+    });
+    CodeMirror.autoLoadMode(editor, "markdown");
+
+    $.ajaxSetup({
+        dataType: "json",
+        success: function(data) {
+            $("#notification-msg").html(data.message);
+            $("#notification-msg").show().delay(3000).fadeOut();
+        },
+        error: function(e) {
+            var data = e.responseJSON;
+            $("#error-msg").html(data.message);
+            $("#error-msg-container").show().delay(3000).fadeOut();
+        },
     });
 
     $("#search-btn").click(function(){
@@ -185,7 +220,9 @@ $(document).ready(function() {
 
     $("#cancel-btn").click(function(){
         $("#snippet-editor").hide();
-        $("#snippet-container").show();
+        if (current_snippet) {
+            $("#snippet-container").show();
+        }
     });
 
     $("#save-btn").click(function(){
@@ -196,6 +233,11 @@ $(document).ready(function() {
         var id = $("#snippet-editor-id").val();
 
         save_snippet(id, title, content, tag, language);
+    });
+
+    $("#snippet-editor-language").change(function(){
+        editor.setOption("mode", $(this).val());
+        CodeMirror.autoLoadMode(editor, $(this).val());
     });
 
     for (var i=0;i<supported_languages.length;i++) {

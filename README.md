@@ -2,6 +2,8 @@
 
 SnippetsToGo is a Flasked-based web application that helps manage your code snippets. Install it on your server and access your code from anywhere.
 
+See read-only demo [here](http://snippetstogo.appspot.com).
+
 # Why SnippetsToGo ?
 
 I've been searching around for some tool that could manage my code snippets either locally or "on the cloud" and is able to:
@@ -15,7 +17,7 @@ However I failed to find a free or open source solution. When you can't find the
 
 SnippetsToGo is dead simple and not built to deal with large amount of data. Powered by Whoosh, a pure-Python search engine, SnippetsToGo should be able to handle thousands of snippets. But if you plan to move toward something more scalable and reliable, it's a better idea to plug Elasticsearch or Solr in.
 
-Beside [Flask](http://flask.pocoo.org) and [Whoosh](https://bitbucket.org/mchaput/whoosh/wiki/Home) as the only two main third-party libraries on server side, this project uses [PrimerCSS](http://primercss.io/), [Highlight.js](https://highlightjs.org), [CodeMirror](http://codemirror.net), [marked](https://github.com/chjj/marked) and [jQuery](https://github.com/chjj/marked) for client side.
+Beside [Flask](http://flask.pocoo.org) and [Whoosh](https://bitbucket.org/mchaput/whoosh/wiki/Home) as the only two main third-party libraries on server side, this project uses [PrimerCSS](http://primercss.io/), [Highlight.js](https://highlightjs.org), [CodeMirror](http://codemirror.net), [marked](https://github.com/chjj/marked) and [jQuery](http://jquery.com) for client side.
 
 # Development
 
