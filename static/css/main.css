@@ -81,6 +81,9 @@ ul {
 
 #snippet-content {
     margin-top: 5px;
+    padding-left: 20px;
+    background: none;
+    border-left: solid #f0f0f0 1px;
 }
 
 #snippet-editor-title {

@@ -54,7 +54,7 @@ function show_snippet(title, content, tag, language) {
         $("#snippet-content").hide();
         $("#snippet-content-markdown").show();
     } else {
-        $("#snippet-content").html(content);
+        $("#snippet-content").text(content);
         $("#snippet-content").attr("class", language);
         hljs.highlightBlock($("#snippet-content").get(0));
         $("#snippet-content-markdown").hide();
