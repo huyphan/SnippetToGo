@@ -22,3 +22,4 @@ else:
         os.mkdir(config.INDEX_DIR)
 
     index.create_in(config.INDEX_DIR, schema)
+    print "Index initialized"

@@ -1,4 +1,4 @@
-var editor, current_snippet;
+var editor, current_snippet, current_page, current_query;
 var supported_languages = ['markdown', 'apl', 'asciiarmor', 'asn.1', 'asterisk', 'brainfuck', 'clike', 'clojure', 'cmake', 'cobol', 'coffeescript', 'commonlisp', 'crystal', 'css', 'cypher', 'd', 'dart', 'diff', 'django', 'dockerfile', 'dtd', 'dylan', 'ebnf', 'ecl', 'eiffel', 'elm', 'erlang', 'factor', 'forth', 'fortran', 'gas', 'gfm', 'gherkin', 'go', 'groovy', 'haml', 'handlebars', 'haskell', 'haxe', 'htmlembedded', 'htmlmixed', 'http', 'idl', 'index.html', 'jade', 'javascript', 'jinja2', 'julia', 'livescript', 'lua', 'mathematica', 'meta.js', 'mirc', 'mllike', 'modelica', 'mscgen', 'mumps', 'nginx', 'nsis', 'ntriples', 'octave', 'oz', 'pascal', 'pegjs', 'perl', 'php', 'pig', 'properties', 'puppet', 'python', 'q', 'r', 'rpm', 'rst', 'ruby', 'rust', 'sass', 'scheme', 'shell', 'sieve', 'slim', 'smalltalk', 'smarty', 'solr', 'soy', 'sparql', 'spreadsheet', 'sql', 'stex', 'stylus', 'swift', 'tcl', 'textile', 'tiddlywiki', 'tiki', 'toml', 'tornado', 'troff', 'ttcn', 'ttcn-cfg', 'turtle', 'twig', 'vb', 'vbscript', 'velocity', 'verilog', 'vhdl', 'vue', 'xml', 'xquery', 'yaml', 'yaml-frontmatter', 'z80'];
 CodeMirror.modeURL = "//cdnjs.cloudflare.com/ajax/libs/codemirror/5.10.0/mode/%N/%N.js";
 
@@ -11,26 +11,40 @@ function generate_snippet_link(title, snippet_id) {
             .append($("<br />"));
 }
 
-function reload_snippets(query) {
+function reload_snippets(query, page) {
+    page = page || 1;
+
     $.ajax({
         method: "GET",
         dataType: "json",
         url: "snippets",
         data: {
-            query: query
+            query: query,
+            page: page
         },
         beforeSend: function() {
             $("#sidebar-loading").show();
             $("#snippet-editor").hide();
             $("#search-result").hide();
+            $("#prev-btn").hide();
+            $("#next-btn").hide();
         },
         success: function(data) {
-            $("#search-result-count").html(data.total);
+            $("#search-result-count").html(data.total_snippets);
             $("#snippets").empty();
-            for (var i=0;i<data.total;i++) {
+            for (var i=0;i<data.results.length;i++) {
                 $("#snippets").append(generate_snippet_link(data.results[i].title, data.results[i].id));
             }
             $("#search-result").show();
+            current_page = data.current_page;
+            current_query = query;
+            if (current_page > 1) {
+                $("#prev-btn").show();
+            }
+
+            if (current_page < data.total_pages) {
+                $("#next-btn").show();   
+            }
         },
         complete: function() {
             $("#sidebar-loading").hide();
@@ -182,6 +196,14 @@ $(document).ready(function() {
             var query = $("#query").val();
             reload_snippets(query);
         }
+    });
+
+    $("#next-btn").click(function(){
+        reload_snippets(current_query, current_page + 1);
+    });
+
+    $("#prev-btn").click(function(){
+        reload_snippets(current_query, current_page - 1);
     });
 
     $("#add-btn").click(function(){

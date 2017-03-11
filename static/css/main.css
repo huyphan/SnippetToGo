@@ -71,6 +71,14 @@ ul {
     text-shadow: none;
 }
 
+.centered {
+    text-align: center;
+}
+
+.menu-item {
+    cursor: pointer;
+}
+
 #action-btns {
     padding-top: 5px;
 }
@@ -97,3 +105,4 @@ ul {
 #snippet-tags {
     padding-top: 5px;
 }
+

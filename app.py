@@ -31,7 +31,7 @@ def get_snippet_by_id(snippet_id):
 @app.route('/snippets', methods=['GET'])
 def search_snippet():
     query = request.args.get('query', None)
-    page = request.args.get('page', 1)
+    page = int(request.args.get('page', 1))
 
     if query:
         qp = MultifieldParser(["title", "content", "tag"], schema=index.schema)
@@ -44,7 +44,9 @@ def search_snippet():
         results = searcher.search_page(q, page, pagelen=config.SEARCH_PAGINATION, sortedby="title")
         for snippet in results:
             response["results"].append({'id': snippet['id'], 'title': snippet['title']})
-        response["total"] = len(results)
+        response["total_snippets"] = len(results)
+        response["total_pages"] = (len(results) - 1) / config.SEARCH_PAGINATION + 1
+        response["current_page"] = page
         return json.dumps(response)
 
     return json.dumps(response)
